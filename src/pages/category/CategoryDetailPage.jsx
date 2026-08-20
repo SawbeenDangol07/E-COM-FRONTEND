@@ -4,7 +4,7 @@ import categoryService from "../../services/category.service";
 import ProductCard from "../../components/product/ProductCard";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
 import { TbArrowLeft, TbDeviceMobileX, TbLoader2, TbPhoto, TbGitBranch } from "react-icons/tb";
-import { resolveImageUrl } from "../../common/constants";
+import { resolveImageUrl, getCategoryFallbackImage } from "../../common/constants";
 
 export default function CategoryDetailPage() {
   const { slug } = useParams();
@@ -41,7 +41,8 @@ export default function CategoryDetailPage() {
   }
 
   const catName = categoryData?.name || slug;
-  const imageUrl = resolveImageUrl(categoryData?.image);
+  const fallbackImg = getCategoryFallbackImage(categoryData || slug);
+  const imageUrl = resolveImageUrl(categoryData?.image, fallbackImg);
 
   return (
     <div className="space-y-8 text-slate-900">
@@ -59,15 +60,15 @@ export default function CategoryDetailPage() {
       {/* Category Hero Card */}
       <div className="p-6 sm:p-8 bg-white rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center md:items-start gap-6">
         <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center shrink-0">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={catName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <TbPhoto className="w-10 h-10 text-slate-400" />
-          )}
+          <img
+            src={imageUrl}
+            alt={catName}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = fallbackImg;
+            }}
+          />
         </div>
 
         <div className="space-y-3 text-center md:text-left flex-1">

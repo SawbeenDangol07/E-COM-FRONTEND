@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../../reducer/ProductReducer";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
 import { TbArrowRight, TbPhoto, TbGitBranch } from "react-icons/tb";
-import { resolveImageUrl } from "../../common/constants";
+import { resolveImageUrl, getCategoryFallbackImage } from "../../common/constants";
 
 export default function CategoryListPage() {
   const dispatch = useDispatch();
@@ -27,7 +27,8 @@ export default function CategoryListPage() {
       {/* Category Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {categories.map((cat) => {
-          const imageUrl = resolveImageUrl(cat.image);
+          const fallbackImg = getCategoryFallbackImage(cat);
+          const imageUrl = resolveImageUrl(cat.image, fallbackImg);
 
           return (
             <Link
@@ -38,16 +39,16 @@ export default function CategoryListPage() {
               <div className="space-y-3.5">
                 {/* Image banner */}
                 <div className="aspect-16/9 w-full rounded-2xl overflow-hidden bg-slate-100 relative flex items-center justify-center">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={cat.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <TbPhoto className="w-10 h-10 text-slate-400" />
-                  )}
+                  <img
+                    src={imageUrl}
+                    alt={cat.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = fallbackImg;
+                    }}
+                  />
 
                   {cat.parent && (
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md border border-slate-200 px-2.5 py-1 rounded-full text-[10px] font-bold text-indigo-700 shadow-2xs flex items-center gap-1">

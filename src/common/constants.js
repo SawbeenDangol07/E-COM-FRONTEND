@@ -42,6 +42,47 @@ export const CATEGORY_LIST = [
 ];
 
 /**
+ * High-definition themed fallback images for smartphone categories
+ */
+export const DEFAULT_CATEGORY_IMAGES = {
+  flagship:
+    "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80",
+  foldable:
+    "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=800&q=80",
+  budget:
+    "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=800&q=80",
+  gaming:
+    "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80",
+  refurbished:
+    "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+  apple:
+    "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80",
+  android:
+    "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80",
+  default:
+    "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+};
+
+/**
+ * Returns a high-res mobile category fallback image based on name or slug
+ */
+export const getCategoryFallbackImage = (category) => {
+  if (!category) return DEFAULT_CATEGORY_IMAGES.default;
+  const key = (
+    typeof category === "string"
+      ? category
+      : category.slug || category.name || ""
+  ).toLowerCase();
+
+  for (const [k, url] of Object.entries(DEFAULT_CATEGORY_IMAGES)) {
+    if (k !== "default" && key.includes(k)) {
+      return url;
+    }
+  }
+  return DEFAULT_CATEGORY_IMAGES.default;
+};
+
+/**
  * Universal Image URL resolver that safely extracts image URLs from:
  * - String URLs (http/https/data/blob or relative backend upload paths)
  * - Object representations ({ secure_url, url, path, thumbUrl, filename })
