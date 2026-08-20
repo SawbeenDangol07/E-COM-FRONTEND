@@ -59,6 +59,17 @@ class OrderService {
     }
   }
 
+  async updateStatus(orderId, status) {
+    try {
+      const response = await axiosInstance.patch(`/order/status/${orderId}`, {
+        status,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async initiatePayment({ orderId, method = "khalti" }) {
     try {
       const response = await axiosInstance.post("/order/khalti-pay", {
