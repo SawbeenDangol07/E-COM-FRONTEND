@@ -117,45 +117,34 @@ export default function RegisterForm() {
       }
 
       await registerUser(payload);
-      toast.success("Account registered! Please activate via email.");
+      toast.success("Account created successfully!");
       setRegisteredEmail(data.email);
     } catch (err) {
       toast.error(err.message || "Registration failed. Please try again.");
     }
   };
 
-  // SUCCESS ACTIVATION SCREEN
+  // SUCCESS SCREEN
   if (registeredEmail) {
     return (
       <div className="text-center py-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
         <div className="w-16 h-16 rounded-3xl bg-emerald-100 border border-emerald-300 text-emerald-600 flex items-center justify-center mx-auto shadow-md shadow-emerald-500/10">
-          <TbMailCheck className="w-9 h-9 stroke-[2]" />
+          <TbCheck className="w-9 h-9 stroke-[3]" />
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-xl font-black text-slate-900">Check Your Inbox</h3>
+          <h3 className="text-xl font-black text-slate-900">Account Ready!</h3>
           <p className="text-xs sm:text-sm text-slate-500 font-light max-w-sm mx-auto leading-relaxed">
-            We have sent an activation link to <strong className="font-bold text-slate-900">{registeredEmail}</strong>.
-            Click the link in the email to activate your account and start trading.
-          </p>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-800 text-left space-y-1">
-          <p className="font-semibold flex items-center gap-1.5">
-            <TbShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
-            <span>Didn&apos;t receive the email?</span>
-          </p>
-          <p className="text-indigo-600/80 font-light text-[11px]">
-            Please check your spam or junk folder, or proceed to login to request an instant reactivation token.
+            Your account for <strong className="font-bold text-slate-900">{registeredEmail}</strong> has been created and activated. You can now sign in immediately.
           </p>
         </div>
 
         <div className="pt-2 flex justify-center">
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-md shadow-indigo-600/20 active:scale-95"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-md shadow-indigo-600/20 active:scale-95 cursor-pointer"
           >
-            <span>Go to Sign In</span>
+            <span>Sign In to Your Account</span>
             <TbArrowRight className="w-4 h-4" />
           </Link>
         </div>
