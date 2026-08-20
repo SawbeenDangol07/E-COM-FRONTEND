@@ -12,6 +12,7 @@ import categoryService from "../../services/category.service";
 import brandService from "../../services/brand.service";
 import { toast } from "sonner";
 import { TbCategory, TbCheck, TbLoader2 } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function CategoryEditPage() {
   const { loggedInUser } = useAuth();
@@ -68,7 +69,7 @@ export default function CategoryEditPage() {
         setSelectedBrands(brandIds);
         setValue("brands", brandIds);
 
-        const imgUrl = cat.image?.secure_url || cat.image?.url || cat.image?.thumbUrl;
+        const imgUrl = resolveImageUrl(cat.image);
         if (imgUrl) {
           setExistingImageUrl(imgUrl);
         }

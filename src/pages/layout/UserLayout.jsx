@@ -36,6 +36,13 @@ export default function UserLayout() {
     }
   }, [location.pathname, loggedInUser, navigate]);
 
+  useEffect(() => {
+    // Default sidebar closed on mobile screens on initial mount
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setShowSidebar(false);
+    }
+  }, []);
+
   if (!loggedInUser) {
     return null;
   }
@@ -48,13 +55,14 @@ export default function UserLayout() {
         setShowSidebar={setShowSidebar}
       />
 
-      <main className="flex flex-1 overflow-hidden">
+      <main className="flex flex-1 overflow-hidden relative">
         <DashboardSidebar
           loggedInUser={loggedInUser}
           showSidebar={showSidebar}
+          setShowSidebar={setShowSidebar}
         />
-        
-        <section className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+
+        <section className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 bg-slate-50 min-w-0">
           <div className="max-w-7xl mx-auto">
             <Outlet context={{ showSidebar, setShowSidebar }} />
           </div>

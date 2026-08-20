@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { TbUser, TbTrash, TbLoader2 } from "react-icons/tb";
+import { TbUser, TbTrash, TbLoader2, TbArrowLeft } from "react-icons/tb";
 import Swal from "sweetalert2";
 import chatService from "../../services/chat.service";
 import { toast } from "sonner";
+import { resolveImageUrl } from "../../common/constants";
 
-export function ChatActiveUser({ activeUser, onChatCleared }) {
+export function ChatActiveUser({ activeUser, onChatCleared, onBack }) {
   const [clearing, setClearing] = useState(false);
   if (!activeUser) return null;
-  const avatarUrl = activeUser.image?.url || (typeof activeUser.image === "string" ? activeUser.image : null);
+  const avatarUrl = resolveImageUrl(activeUser.avatar || activeUser.image);
 
   const handleClearConversation = async () => {
     const result = await Swal.fire({
@@ -35,24 +36,35 @@ export function ChatActiveUser({ activeUser, onChatCleared }) {
   };
 
   return (
-    <div className="border-b border-slate-200 px-6 py-4 bg-white flex items-center justify-between shadow-2xs">
-      <div className="flex items-center gap-3.5 min-w-0">
+    <div className="border-b border-slate-200 px-3.5 sm:px-6 py-3 sm:py-4 bg-white flex items-center justify-between shadow-2xs shrink-0">
+      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+        {/* Mobile Back to contacts button */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition mr-0.5 shrink-0 cursor-pointer"
+            title="Back to contacts"
+          >
+            <TbArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+
         {/* Avatar with prominent Green Online Indicator */}
         <div className="relative shrink-0">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={activeUser.name}
-              className="w-11 h-11 rounded-full object-cover border-2 border-emerald-400"
+              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-400"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-indigo-100 border-2 border-emerald-400 text-indigo-700 font-bold flex items-center justify-center text-sm">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-indigo-100 border-2 border-emerald-400 text-indigo-700 font-bold flex items-center justify-center text-xs sm:text-sm">
               {activeUser.name ? activeUser.name[0].toUpperCase() : <TbUser className="w-5 h-5" />}
             </div>
           )}
           {/* Green Status Dot Indicator */}
           <span
-            className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white shadow-xs"
+            className="absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-500 ring-2 ring-white shadow-xs"
             title="Online"
           />
         </div>

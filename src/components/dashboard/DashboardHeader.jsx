@@ -11,25 +11,24 @@ export const DashboardHeader = ({ loggedInUser, showSidebar, setShowSidebar }) =
       <header className="h-16 bg-white border-b border-slate-200 w-full text-slate-900 shrink-0 sticky top-0 z-30 shadow-2xs">
         <div className="flex items-center justify-between h-full px-4 sm:px-6">
           {/* Left: Brand & Sidebar toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer shrink-0"
               title="Toggle Sidebar"
             >
               {showSidebar ? (
-                <TbLayoutSidebarLeftCollapse className="w-5 h-5" />
-              ) : (
-                <TbMenu2 className="w-5 h-5" />
-              )}
+                <TbLayoutSidebarLeftCollapse className="w-5 h-5 hidden md:block" />
+              ) : null}
+              <TbMenu2 className={`w-5 h-5 ${showSidebar ? "md:hidden" : "block"}`} />
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className="font-heading text-base sm:text-lg font-bold tracking-tight text-slate-900">
-                {isAdmin ? "MobiMarket Admin" : "Seller Merchant Center"}
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="font-heading text-sm sm:text-base font-bold tracking-tight text-slate-900 truncate">
+                {isAdmin ? "MobiMarket Admin" : "Seller Portal"}
               </span>
               <span
-                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${
                   isAdmin
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                     : "bg-indigo-50 text-indigo-700 border-indigo-200"

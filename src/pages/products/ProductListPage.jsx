@@ -205,11 +205,11 @@ export default function ProductListPage() {
         {mobileFilterOpen && (
           <div className="fixed inset-0 z-50 overflow-hidden lg:hidden">
             <div
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
+              className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity duration-300"
               onClick={() => setMobileFilterOpen(false)}
             />
-            <div className="fixed inset-y-0 left-0 max-w-full flex pr-10">
-              <div className="w-screen max-w-xs bg-white border-r border-slate-200 p-5 overflow-y-auto">
+            <div className="fixed inset-y-0 left-0 max-w-full flex pr-10 z-10">
+              <div className="w-screen max-w-sm bg-white border-r border-slate-200 p-5 overflow-y-auto shadow-2xl">
                 <ProductFilter onClose={() => setMobileFilterOpen(false)} />
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function ProductListPage() {
         {/* Product Grid Area */}
         <section className="lg:col-span-9 space-y-6">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}

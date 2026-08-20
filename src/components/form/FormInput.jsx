@@ -1,6 +1,7 @@
 import { useController } from "react-hook-form";
 import { TbPhoto, TbX } from "react-icons/tb";
 import { useState } from "react";
+import { resolveImageUrl } from "../../common/constants";
 
 export const FormInputControl = ({
   name,
@@ -215,15 +216,19 @@ export const FileInput = ({
         <div className="mt-2 space-y-1.5">
           <p className="text-[11px] font-semibold text-slate-500">Current Product Photos:</p>
           <div className="flex flex-wrap gap-2.5 p-2 bg-slate-50 rounded-2xl border border-slate-200">
-            {existingImages.map((img, i) => (
-              <div key={img._id || img.public_id || i} className="relative">
-                <img
-                  src={img.url || img.secure_url}
-                  alt={`Existing ${i}`}
-                  className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-2xs"
-                />
-              </div>
-            ))}
+            {existingImages.map((img, i) => {
+              const src = resolveImageUrl(img);
+              if (!src) return null;
+              return (
+                <div key={img._id || img.public_id || i} className="relative">
+                  <img
+                    src={src}
+                    alt={`Existing ${i}`}
+                    className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-2xs"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

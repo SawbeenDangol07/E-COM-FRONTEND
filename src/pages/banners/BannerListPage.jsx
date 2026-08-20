@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import bannerService from "../../services/banner.service";
 import { toast } from "sonner";
 import { TbPhoto, TbExternalLink, TbLayoutBoardSplit } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function BannerListPage() {
   const { loggedInUser } = useAuth();
@@ -91,7 +92,7 @@ export default function BannerListPage() {
                 <RowSkeleton rows={5} columns={5} />
               ) : banners && banners.length > 0 ? (
                 banners.map((item) => {
-                  const bannerImg = item.image?.url || (typeof item.image === "string" ? item.image : null);
+                  const bannerImg = resolveImageUrl(item.image);
 
                   return (
                     <tr key={item._id} className="hover:bg-slate-50/60 transition">

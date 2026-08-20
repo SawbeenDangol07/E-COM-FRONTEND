@@ -1,14 +1,15 @@
 import { Link } from "react-router";
 import { useCart } from "../../hooks/useCart";
 import { TbPlus, TbPhoto } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const productId = product._id || product.id;
   const productSlug = product.slug || productId;
 
-  const rawImage = product.images?.[0];
-  const imageUrl = typeof rawImage === "object" ? rawImage?.url : rawImage;
+  const rawImage = product.images?.[0] || product.image;
+  const imageUrl = resolveImageUrl(rawImage);
 
   const brandName = Array.isArray(product.brand)
     ? product.brand[0]?.name || product.brand[0]?.slug || ""

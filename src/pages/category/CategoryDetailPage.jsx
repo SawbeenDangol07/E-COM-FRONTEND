@@ -4,6 +4,7 @@ import categoryService from "../../services/category.service";
 import ProductCard from "../../components/product/ProductCard";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
 import { TbArrowLeft, TbDeviceMobileX, TbLoader2, TbPhoto, TbGitBranch } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function CategoryDetailPage() {
   const { slug } = useParams();
@@ -40,10 +41,7 @@ export default function CategoryDetailPage() {
   }
 
   const catName = categoryData?.name || slug;
-  const imageUrl =
-    categoryData?.image?.secure_url ||
-    categoryData?.image?.url ||
-    categoryData?.image?.thumbUrl;
+  const imageUrl = resolveImageUrl(categoryData?.image);
 
   return (
     <div className="space-y-8 text-slate-900">

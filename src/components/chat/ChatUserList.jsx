@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveUser, getAllUsers } from "../../reducer/UserReducer";
 import { TbUsers, TbSearch, TbUser } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function ChatUserList({ activeUser }) {
   const dispatch = useDispatch();
@@ -15,9 +16,9 @@ export default function ChatUserList({ activeUser }) {
   };
 
   return (
-    <aside className="w-80 bg-slate-50/80 border-r border-slate-200 flex flex-col shrink-0">
+    <aside className="w-full md:w-80 bg-slate-50/80 border-r border-slate-200 flex flex-col shrink-0 h-full">
       {/* Sidebar Header */}
-      <div className="px-5 py-4 border-b border-slate-200 bg-white space-y-3">
+      <div className="px-4 sm:px-5 py-4 border-b border-slate-200 bg-white space-y-3">
         <div className="flex items-center gap-2">
           <TbUsers className="w-5 h-5 text-indigo-600" />
           <h2 className="font-bold text-slate-900 text-base tracking-tight">
@@ -45,7 +46,7 @@ export default function ChatUserList({ activeUser }) {
         ) : users && users.length > 0 ? (
           users.map((user) => {
             const isSelected = activeUser?._id === user._id;
-            const avatarUrl = user.image?.url || (typeof user.image === "string" ? user.image : null);
+            const avatarUrl = resolveImageUrl(user.avatar || user.image);
 
             return (
               <div

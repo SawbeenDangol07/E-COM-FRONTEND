@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import chatService from "../../services/chat.service";
 import { TbUsers, TbShieldCheck, TbSearch, TbX, TbUser, TbLoader2 } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function AdminUserListPage() {
   const [users, setUsers] = useState([]);
@@ -31,7 +32,6 @@ export default function AdminUserListPage() {
 
   return (
     <div className="space-y-6 text-slate-900">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
@@ -44,30 +44,15 @@ export default function AdminUserListPage() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-        <div className="relative flex-1 max-w-md">
-          <TbSearch className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search by name, email, or role..."
-            value={search}
-            onChange={handleSearchChange}
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 outline-none focus:border-indigo-500 focus:bg-white"
-          />
-        </div>
-      </div>
-
-      {/* Users Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-6 space-y-4 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="px-5 py-4">User Profile</th>
+                <th className="px-5 py-4">User</th>
                 <th className="px-5 py-4">Role</th>
                 <th className="px-5 py-4">Account Status</th>
-                <th className="px-5 py-4">Joined Date</th>
+                <th className="px-5 py-4">Registered Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -80,7 +65,7 @@ export default function AdminUserListPage() {
                 </tr>
               ) : users.length > 0 ? (
                 users.map((u) => {
-                  const avatarUrl = u.image?.url || (typeof u.image === "string" ? u.image : null);
+                  const avatarUrl = resolveImageUrl(u.avatar || u.image);
                   const dateStr = u.createdAt
                     ? new Date(u.createdAt).toLocaleDateString("en-US", {
                         month: "short",

@@ -70,6 +70,10 @@ class CategoryService {
 
         if (categoryData.image instanceof File) {
           formData.append("image", categoryData.image);
+        } else if (Array.isArray(categoryData.image) && categoryData.image[0] instanceof File) {
+          formData.append("image", categoryData.image[0]);
+        } else if (categoryData.image && typeof categoryData.image === "object" && categoryData.image.file instanceof File) {
+          formData.append("image", categoryData.image.file);
         }
         payload = formData;
         headers["Content-Type"] = "multipart/form-data";
@@ -113,6 +117,10 @@ class CategoryService {
 
         if (categoryData.image instanceof File) {
           formData.append("image", categoryData.image);
+        } else if (Array.isArray(categoryData.image) && categoryData.image[0] instanceof File) {
+          formData.append("image", categoryData.image[0]);
+        } else if (categoryData.image && typeof categoryData.image === "object" && categoryData.image.file instanceof File) {
+          formData.append("image", categoryData.image.file);
         }
         payload = formData;
         headers["Content-Type"] = "multipart/form-data";

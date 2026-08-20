@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
 import orderService from "../../services/order.service";
 import { toast } from "sonner";
+import { resolveImageUrl } from "../../common/constants";
 import {
   TbReceipt,
   TbDeviceMobile,
@@ -132,26 +133,26 @@ export default function CustomerOrdersPage() {
             return (
               <div
                 key={ord._id || ord.orderId}
-                className="bg-white rounded-3xl border border-slate-200/90 p-6 space-y-4 shadow-xs hover:border-indigo-200 transition"
+                className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-6 space-y-4 shadow-xs hover:border-indigo-200 transition"
               >
-                {/* Top bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                {/* Top bar responsive grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 border-b border-slate-100 pb-3 text-xs">
                   <div>
-                    <span className="text-xs text-slate-400 font-light block">Order ID</span>
-                    <span className="font-mono font-bold text-slate-800 text-sm">
+                    <span className="text-[11px] text-slate-400 font-light block">Order ID</span>
+                    <span className="font-mono font-bold text-slate-800 text-xs sm:text-sm">
                       #{ord.orderId}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-xs text-slate-400 font-light block">Date Placed</span>
+                    <span className="text-[11px] text-slate-400 font-light block">Date Placed</span>
                     <span className="text-xs font-semibold text-slate-700">{dateStr}</span>
                   </div>
 
                   <div>
-                    <span className="text-xs text-slate-400 font-light block">Order Status</span>
+                    <span className="text-[11px] text-slate-400 font-light block">Order Status</span>
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border ${
                         ord.status === "delivered" || ord.status === "processing"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : ord.status === "new"
@@ -164,7 +165,7 @@ export default function CustomerOrdersPage() {
                   </div>
 
                   <div>
-                    <span className="text-xs text-slate-400 font-light block">Payment</span>
+                    <span className="text-[11px] text-slate-400 font-light block">Payment</span>
                     {isPaid ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
                         <TbCheck className="w-3.5 h-3.5" />
@@ -182,11 +183,9 @@ export default function CustomerOrdersPage() {
                 <div className="space-y-3">
                   {Array.isArray(ord.detail) &&
                     ord.detail.map((item, idx) => {
-                      const itemImg =
-                        item.product?.images?.[0]?.url ||
-                        (typeof item.product?.images?.[0] === "string"
-                          ? item.product?.images[0]
-                          : null);
+                      const itemImg = resolveImageUrl(
+                        item.product?.images?.[0] || item.product?.image || item.product?.images
+                      );
                       const itemPrice = (item.price ? item.price / 100 : 0).toFixed(2);
 
                       return (

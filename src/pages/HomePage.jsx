@@ -5,6 +5,7 @@ import { fetchProducts, fetchCategories } from "../reducer/ProductReducer";
 import bannerService from "../services/banner.service";
 import ProductCard from "../components/product/ProductCard";
 import { TbArrowRight, TbChevronLeft, TbChevronRight } from "react-icons/tb";
+import { resolveImageUrl } from "../common/constants";
 
 export default function HomePage() {
   const dispatch = useDispatch();
@@ -48,12 +49,12 @@ export default function HomePage() {
         });
 
   return (
-    <div className="space-y-10 sm:space-y-12 text-slate-900">
+    <div className="space-y-8 sm:space-y-12 text-slate-900">
       {/* PROMOTIONAL BANNER CAROUSEL SLIDER */}
       {banners.length > 0 && (
-        <section className="relative rounded-3xl overflow-hidden shadow-lg shadow-slate-900/10 group aspect-21/9 min-h-[260px] max-h-[420px] bg-slate-950 flex items-center justify-center">
+        <section className="relative rounded-3xl overflow-hidden shadow-lg shadow-slate-900/10 group aspect-16/9 sm:aspect-21/9 min-h-[220px] sm:min-h-[280px] max-h-[420px] bg-slate-950 flex items-center justify-center">
           {banners.map((b, idx) => {
-            const bannerImg = b.image?.url || (typeof b.image === "string" ? b.image : "");
+            const bannerImg = resolveImageUrl(b.image);
             const isActive = idx === currentBannerIdx;
 
             return (
@@ -74,12 +75,12 @@ export default function HomePage() {
                   />
                 )}
                 {/* Subtle Gradient & Title overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex items-end p-6 sm:p-10">
-                  <div className="space-y-2 max-w-xl text-white">
-                    <span className="px-3 py-1 rounded-full bg-indigo-600/90 text-white text-[11px] font-bold uppercase tracking-wider">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent flex items-end p-4 sm:p-8 lg:p-10">
+                  <div className="space-y-1.5 sm:space-y-2 max-w-xl text-white">
+                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-indigo-600/90 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
                       Special Offer
                     </span>
-                    <h2 className="text-xl sm:text-3xl font-bold tracking-tight leading-snug">
+                    <h2 className="text-base sm:text-2xl lg:text-3xl font-bold tracking-tight leading-snug line-clamp-2">
                       {b.title}
                     </h2>
                   </div>
@@ -96,30 +97,30 @@ export default function HomePage() {
                   e.preventDefault();
                   setCurrentBannerIdx((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-900 backdrop-blur-md shadow-md z-20 transition cursor-pointer opacity-0 group-hover:opacity-100"
+                className="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-900 backdrop-blur-md shadow-md z-20 transition cursor-pointer opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
                 title="Previous banner"
               >
-                <TbChevronLeft className="w-5 h-5" />
+                <TbChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   setCurrentBannerIdx((prev) => (prev + 1) % banners.length);
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-900 backdrop-blur-md shadow-md z-20 transition cursor-pointer opacity-0 group-hover:opacity-100"
+                className="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-900 backdrop-blur-md shadow-md z-20 transition cursor-pointer opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
                 title="Next banner"
               >
-                <TbChevronRight className="w-5 h-5" />
+                <TbChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               {/* Dots */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+              <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
                 {banners.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentBannerIdx(i)}
-                    className={`h-2 rounded-full transition-all ${
-                      i === currentBannerIdx ? "w-6 bg-white" : "w-2 bg-white/50"
+                    className={`h-1.5 sm:h-2 rounded-full transition-all ${
+                      i === currentBannerIdx ? "w-5 sm:w-6 bg-white" : "w-1.5 sm:w-2 bg-white/50"
                     }`}
                   />
                 ))}

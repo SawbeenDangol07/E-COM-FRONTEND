@@ -114,7 +114,7 @@ export default function ChatPage() {
       </div>
 
       {/* Main Chat Container */}
-      <div className="h-[75vh] min-h-[520px] rounded-3xl bg-white border border-slate-200 shadow-xs overflow-hidden flex flex-col md:flex-row">
+      <div className="h-[75vh] min-h-[460px] rounded-3xl bg-white border border-slate-200 shadow-xs overflow-hidden flex flex-col md:flex-row">
         {/* Left: Chat User List */}
         <div
           className={`${
@@ -132,21 +132,11 @@ export default function ChatPage() {
         >
           {activeUser ? (
             <>
-              {/* Mobile Back Button */}
-              <div className="md:hidden p-2.5 bg-white border-b border-slate-200 flex items-center">
-                <button
-                  onClick={() => setShowMobileList(true)}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-indigo-600 transition cursor-pointer"
-                >
-                  <TbArrowLeft className="w-4 h-4" />
-                  <span>All Conversations</span>
-                </button>
-              </div>
-
-              {/* Top Active User Bar with Green Indicator and Clear Chat */}
+              {/* Top Active User Bar with Mobile Back Arrow and Clear Chat */}
               <ChatActiveUser
                 activeUser={activeUser}
                 onChatCleared={handleMessageSent}
+                onBack={() => setShowMobileList(true)}
               />
 
               {/* Message Thread */}

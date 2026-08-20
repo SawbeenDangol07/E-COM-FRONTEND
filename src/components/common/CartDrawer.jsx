@@ -1,5 +1,6 @@
 import { useCart } from "../../hooks/useCart";
 import { Link, useNavigate } from "react-router";
+import { resolveImageUrl } from "../../common/constants";
 import {
   TbX,
   TbTrash,
@@ -32,33 +33,33 @@ export default function CartDrawer() {
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300"
+        className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity duration-300"
         onClick={() => setIsCartOpen(false)}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10 z-10">
         <div className="w-screen max-w-md bg-white border-l border-slate-200 shadow-2xl flex flex-col justify-between text-slate-900">
           {/* Header */}
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
                 <TbShoppingBag className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900">Your Cart</h2>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Your Cart</h2>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                 {cart.length}
               </span>
             </div>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition cursor-pointer"
             >
               <TbX className="w-5 h-5" />
             </button>
           </div>
 
           {/* Cart Item List */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
             {cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-12 text-slate-400">
                 <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
@@ -78,16 +79,10 @@ export default function CartDrawer() {
               </div>
             ) : (
               cart.map((item) => {
-                const itemImg =
-                  (typeof item.image === "string" ? item.image : item.image?.url) ||
-                  (Array.isArray(item.images) && item.images.length > 0
-                    ? typeof item.images[0] === "string"
-                      ? item.images[0]
-                      : item.images[0]?.url
-                    : typeof item.images === "string"
-                    ? item.images
-                    : null) ||
-                  "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=200&q=80";
+                const itemImg = resolveImageUrl(
+                  item.image || item.images?.[0] || item.images,
+                  "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=200&q=80"
+                );
 
                 return (
                   <div

@@ -4,6 +4,7 @@ import { useCart } from "../../hooks/useCart";
 import { useAuth } from "../../hooks/useAuth";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
 import orderService from "../../services/order.service";
+import { resolveImageUrl } from "../../common/constants";
 import {
   TbTruckDelivery,
   TbShieldCheck,
@@ -424,16 +425,10 @@ export default function CheckoutPage() {
             {/* List of items */}
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-slate-100">
               {cart.map((item) => {
-                const itemImg =
-                  (typeof item.image === "string" ? item.image : item.image?.url) ||
-                  (Array.isArray(item.images) && item.images.length > 0
-                    ? typeof item.images[0] === "string"
-                      ? item.images[0]
-                      : item.images[0]?.url
-                    : typeof item.images === "string"
-                    ? item.images
-                    : null) ||
-                  "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=100&q=80";
+                const itemImg = resolveImageUrl(
+                  item.image || item.images?.[0] || item.images,
+                  "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=100&q=80"
+                );
 
                 return (
                   <div key={item.id} className="pt-3 first:pt-0 flex items-center justify-between gap-3 text-xs">

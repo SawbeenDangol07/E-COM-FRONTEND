@@ -3,7 +3,8 @@ import { useParams, Link } from "react-router";
 import brandService from "../../services/brand.service";
 import ProductCard from "../../components/product/ProductCard";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
-import { TbArrowLeft, TbDeviceMobileX, TbLoader2, TbPhoto } from "react-icons/tb";
+import { TbArrowLeft, TbDeviceMobileX, TbLoader2, TbPhoto, TbTag } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function BrandDetailPage() {
   const { slug } = useParams();
@@ -40,7 +41,7 @@ export default function BrandDetailPage() {
   }
 
   const brandName = brandData?.name || slug.toUpperCase();
-  const logoUrl = brandData?.logo?.url;
+  const logoUrl = resolveImageUrl(brandData?.logo || brandData?.image);
 
   return (
     <div className="space-y-8 text-slate-900">

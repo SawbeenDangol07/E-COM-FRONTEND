@@ -8,6 +8,7 @@ import productService from "../../services/product.service";
 import { toast } from "sonner";
 import { TbDeviceMobile, TbPhoto, TbEye } from "react-icons/tb";
 import { Link } from "react-router";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function AdminProductListPage() {
   const { loggedInUser } = useAuth();
@@ -26,7 +27,9 @@ export default function AdminProductListPage() {
     try {
       const response = await productService.listAll({ page, limit, search });
       setProducts(response.data || []);
-      if (response.meta) {
+      if (response.meta?.pagination) {
+        setPagination(response.meta.pagination);
+      } else if (response.meta) {
         setPagination({
           page: response.meta.page || page,
           limit: response.meta.limit || limit,
@@ -74,11 +77,11 @@ export default function AdminProductListPage() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="px-5 py-4">Product Name</th>
+                <th className="px-5 py-4">Phone / Model</th>
                 <th className="px-5 py-4">Thumbnail</th>
-                <th className="px-5 py-4">Price</th>
-                <th className="px-5 py-4">Brand & Category</th>
-                <th className="px-5 py-4">Stock</th>
+                <th className="px-5 py-4">Price (NPR)</th>
+                <th className="px-5 py-4">Brand</th>
+                <th className="px-5 py-4">Seller</th>
                 <th className="px-5 py-4">Status</th>
                 <th className="px-5 py-4 text-center">Actions</th>
               </tr>
@@ -88,7 +91,7 @@ export default function AdminProductListPage() {
                 <RowSkeleton rows={5} columns={7} />
               ) : products && products.length > 0 ? (
                 products.map((item) => {
-                  const firstImg = item.images?.[0]?.url;
+                  const firstImg = resolveImageUrl(item.images?.[0] || item.image || item.images);
                   const displayPrice = (item.price / 100).toFixed(2);
                   const displayAfterDiscount = (item.afterDiscount / 100).toFixed(2);
 

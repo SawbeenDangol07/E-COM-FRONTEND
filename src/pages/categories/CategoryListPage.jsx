@@ -6,6 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import categoryService from "../../services/category.service";
 import { toast } from "sonner";
 import { TbCategory, TbPhoto, TbGitBranch } from "react-icons/tb";
+import { resolveImageUrl } from "../../common/constants";
 
 export default function CategoryListPage() {
   const { loggedInUser } = useAuth();
@@ -84,8 +85,7 @@ export default function CategoryListPage() {
                 <RowSkeleton rows={5} columns={6} />
               ) : filteredCategories && filteredCategories.length > 0 ? (
                 filteredCategories.map((item) => {
-                  const imageUrl =
-                    item.image?.secure_url || item.image?.url || item.image?.thumbUrl;
+                  const imageUrl = resolveImageUrl(item.image);
 
                   return (
                     <tr key={item._id} className="hover:bg-slate-50/60 transition">

@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import chatService from "../../services/chat.service";
 import { TbUser, TbLoader2, TbTrash } from "react-icons/tb";
 import { toast } from "sonner";
+import { resolveImageUrl } from "../../common/constants";
 
 export function ChatMessage({ refreshTrigger }) {
   const [messages, setMessages] = useState([]);
@@ -120,7 +121,7 @@ export function ChatMessage({ refreshTrigger }) {
   return (
     <div
       ref={chatContainerRef}
-      className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-slate-50/60"
+      className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4 bg-slate-50/60"
     >
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-2 text-slate-400">
@@ -131,7 +132,7 @@ export function ChatMessage({ refreshTrigger }) {
         messages.map((item, index) => {
           const senderId = item.sender?._id || item.sender;
           const isMine = senderId === currentUserId;
-          const senderAvatar = item.sender?.image?.url || null;
+          const senderAvatar = resolveImageUrl(item.sender?.avatar || item.sender?.image);
           const timeStr = item.createdAt
             ? new Date(item.createdAt).toLocaleTimeString([], {
                 hour: "2-digit",
@@ -142,7 +143,7 @@ export function ChatMessage({ refreshTrigger }) {
           return (
             <div
               key={item._id || index}
-              className={`flex items-end gap-2.5 group/msg ${isMine ? "flex-row-reverse" : "flex-row"}`}
+              className={`flex items-end gap-2 sm:gap-2.5 group/msg ${isMine ? "flex-row-reverse" : "flex-row"}`}
             >
               {/* Avatar for incoming */}
               {!isMine &&
@@ -150,10 +151,10 @@ export function ChatMessage({ refreshTrigger }) {
                   <img
                     src={senderAvatar}
                     alt=""
-                    className="w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0 shadow-2xs"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-200 shrink-0 shadow-2xs"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0">
                     {item.sender?.name ? item.sender.name[0].toUpperCase() : <TbUser className="w-4 h-4" />}
                   </div>
                 ))}

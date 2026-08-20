@@ -120,15 +120,19 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 p-1 pl-2.5 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:pl-2.5 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
                   >
                     <span className="text-xs font-semibold text-slate-700 hidden sm:inline max-w-[100px] truncate">
                       {loggedInUser.name}
                     </span>
                     <img
-                      src={loggedInUser.avatar}
+                      src={
+                        loggedInUser.avatar ||
+                        loggedInUser.image?.url ||
+                        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                      }
                       alt={loggedInUser.name}
-                      className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                      className="w-7 h-7 rounded-full object-cover border border-slate-200 shrink-0"
                     />
                   </button>
 
@@ -216,13 +220,13 @@ export default function Navbar() {
                 <div className="flex items-center gap-1.5">
                   <Link
                     to="/login"
-                    className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition"
+                    className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition"
                   >
                     Log in
                   </Link>
                   <Link
                     to="/register"
-                    className="hidden sm:inline-flex px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-xs"
+                    className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-xs"
                   >
                     Sign up
                   </Link>
@@ -232,7 +236,8 @@ export default function Navbar() {
               {/* Mobile Hamburger Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                className="lg:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition cursor-pointer"
+                title="Toggle Mobile Menu"
               >
                 {mobileMenuOpen ? <TbX className="w-6 h-6" /> : <TbMenu2 className="w-6 h-6" />}
               </button>
@@ -241,7 +246,7 @@ export default function Navbar() {
 
           {/* Mobile Dropdown Search & Navigation */}
           {mobileMenuOpen && (
-            <div className="lg:hidden py-4 border-t border-slate-200 space-y-4">
+            <div className="lg:hidden py-4 border-t border-slate-200 space-y-4 animate-in fade-in duration-150">
               <form onSubmit={handleSearchSubmit} className="relative flex items-center">
                 <TbSearch className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
                 <input
@@ -249,7 +254,7 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search phones, specs, brands..."
-                  className="w-full pl-9 pr-4 py-2 text-sm bg-slate-100 text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 outline-none"
+                  className="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-100 text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 outline-none focus:border-indigo-500 focus:bg-white"
                 />
               </form>
 

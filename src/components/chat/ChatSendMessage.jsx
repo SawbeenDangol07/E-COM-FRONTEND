@@ -31,7 +31,7 @@ export function ChatSendMessage({ activeUser, onMessageSent }) {
   return (
     <form
       onSubmit={handleSend}
-      className="border-t border-slate-200 bg-white px-6 py-3.5 flex items-center gap-3"
+      className="border-t border-slate-200 bg-white px-3.5 sm:px-6 py-3 flex items-center gap-2 sm:gap-3 shrink-0"
     >
       <input
         type="text"
@@ -39,14 +39,14 @@ export function ChatSendMessage({ activeUser, onMessageSent }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         disabled={sending}
-        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 px-4 py-2.5 text-xs sm:text-sm outline-none focus:border-indigo-500 focus:bg-white transition"
+        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm outline-none focus:border-indigo-500 focus:bg-white transition"
       />
       <button
         type="submit"
         disabled={!message.trim() || sending}
-        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer active:scale-95"
+        className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer active:scale-95 shrink-0"
       >
-        <span>Send</span>
+        <span className="hidden sm:inline">Send</span>
         <TbSend className="w-4 h-4" />
       </button>
     </form>

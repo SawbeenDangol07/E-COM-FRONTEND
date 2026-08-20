@@ -8,6 +8,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { toast } from "sonner";
 import { ImeiVerifiedBadge } from "../../components/common/Badge";
 import ProductCard from "../../components/product/ProductCard";
+import { resolveImageUrl } from "../../common/constants";
 import {
   TbMessageDots,
   TbShoppingBag,
@@ -94,10 +95,16 @@ export default function ProductDetailPage() {
 
   const productId = product._id || product.id;
 
-  const images =
+  const rawImages =
     Array.isArray(product.images) && product.images.length > 0
-      ? product.images.map((img) => (typeof img === "object" ? img.url : img))
+      ? product.images
+      : product.image
+      ? [product.image]
       : [];
+
+  const images = rawImages
+    .map((img) => resolveImageUrl(img))
+    .filter(Boolean);
 
   const mainImageUrl = images[selectedImageIndex] || null;
 
@@ -134,7 +141,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="space-y-12 text-slate-900">
+    <div className="space-y-8 sm:space-y-12 text-slate-900">
       {/* Breadcrumb back */}
       <div>
         <Link
@@ -147,10 +154,10 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Main Showcase: Gallery (Left) + Details & Purchase (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-start">
         {/* Left: Gallery */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="relative aspect-4/3 w-full bg-white rounded-3xl border border-slate-200/90 p-8 flex items-center justify-center overflow-hidden shadow-xs">
+          <div className="relative aspect-4/3 w-full bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-8 flex items-center justify-center overflow-hidden shadow-xs">
             {mainImageUrl ? (
               <img
                 src={mainImageUrl}
@@ -174,12 +181,12 @@ export default function ProductDetailPage() {
 
           {/* Thumbnail Strip */}
           {images.length > 1 && (
-            <div className="flex items-center gap-3 overflow-x-auto pb-2">
+            <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-2 scrollbar-none">
               {images.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`w-20 h-20 rounded-2xl bg-white border p-1.5 overflow-hidden shrink-0 transition cursor-pointer ${
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border p-1.5 overflow-hidden shrink-0 transition cursor-pointer ${
                     selectedImageIndex === idx
                       ? "border-indigo-600 ring-2 ring-indigo-500/20 shadow-xs"
                       : "border-slate-200 hover:border-slate-300"
