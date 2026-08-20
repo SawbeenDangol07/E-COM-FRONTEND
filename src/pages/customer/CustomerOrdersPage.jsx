@@ -10,6 +10,8 @@ import {
   TbCreditCard,
   TbLoader2,
   TbCheck,
+  TbCash,
+  TbTruckDelivery,
 } from "react-icons/tb";
 
 export default function CustomerOrdersPage() {
@@ -59,13 +61,31 @@ export default function CustomerOrdersPage() {
     try {
       setPayingOrderId(orderId);
       const res = await orderService.initiatePayment({ orderId, method: "khalti" });
-      if (res.data?.payment_url) {
-        window.location.href = res.data.payment_url;
+      const paymentUrl =
+        res.data?.payment_url ||
+        res.data?.data?.payment_url ||
+        res.data?.url;
+
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
       } else {
-        toast.info("Payment initiated. Please follow provider instructions.");
+        toast.info("Connecting to Khalti gateway...");
       }
     } catch (err) {
       toast.error(err.message || "Failed to initiate payment");
+    } finally {
+      setPayingOrderId(null);
+    }
+  };
+
+  const handleSwitchToCod = async (orderId) => {
+    try {
+      setPayingOrderId(orderId);
+      await orderService.initiatePayment({ orderId, method: "cod" });
+      toast.success("Order switched to Cash on Delivery (COD) successfully!");
+      await loadOrders();
+    } catch (err) {
+      toast.error(err.message || "Failed to switch payment method");
     } finally {
       setPayingOrderId(null);
     }
@@ -128,7 +148,10 @@ export default function CustomerOrdersPage() {
                 })
               : "Recent";
 
-            const isPaid = ord.transaction && ord.transaction.length > 0;
+            const isPaid = Array.isArray(ord.transaction) && ord.transaction.length > 0;
+            const isCod =
+              ord.paymentMethod === "cod" ||
+              (!isPaid && (ord.status === "processing" || ord.status === "delivered"));
 
             return (
               <div
@@ -152,28 +175,35 @@ export default function CustomerOrdersPage() {
                   <div>
                     <span className="text-[11px] text-slate-400 font-light block">Order Status</span>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border ${
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border ${
                         ord.status === "delivered" || ord.status === "processing"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : ord.status === "new"
-                          ? "bg-indigo-50 text-indigo-700 border-indigo-200"
-                          : "bg-amber-50 text-amber-700 border-amber-200"
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : "bg-rose-50 text-rose-700 border-rose-200"
                       }`}
                     >
-                      {ord.status.toUpperCase()}
+                      {ord.status === "processing"
+                        ? "PROCESSING / DISPATCH"
+                        : ord.status.toUpperCase()}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[11px] text-slate-400 font-light block">Payment</span>
+                    <span className="text-[11px] text-slate-400 font-light block">Payment Method</span>
                     {isPaid ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
                         <TbCheck className="w-3.5 h-3.5" />
-                        <span>Paid</span>
+                        <span>Paid (Khalti)</span>
+                      </span>
+                    ) : isCod ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600">
+                        <TbCash className="w-3.5 h-3.5" />
+                        <span>Cash on Delivery</span>
                       </span>
                     ) : (
                       <span className="text-[11px] font-semibold text-amber-600">
-                        Pending / Escrow
+                        Pending Payment
                       </span>
                     )}
                   </div>
@@ -223,24 +253,46 @@ export default function CustomerOrdersPage() {
                     })}
                 </div>
 
-                {/* Bottom Footer & Online Payment Action */}
-                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-xs text-slate-500 font-light">
-                    <span>Total Amount: </span>
+                {/* Bottom Footer */}
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-500 font-light">Total: </span>
                     <strong className="text-slate-900 font-bold text-base">
                       Rs. {displayTotal}
                     </strong>
                   </div>
 
-                  {!isPaid && (
-                    <button
-                      onClick={() => handlePayOnline(ord.orderId)}
-                      disabled={payingOrderId === ord.orderId}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
-                    >
-                      <TbCreditCard className="w-4 h-4" />
-                      <span>{payingOrderId === ord.orderId ? "Connecting..." : "Pay with Khalti / Online"}</span>
-                    </button>
+                  {/* Contextual Status / Action for Payment */}
+                  {isPaid ? (
+                    <div className="inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 font-medium">
+                      <TbCheck className="w-4 h-4 text-emerald-600" />
+                      <span>Payment Verified (Khalti Online)</span>
+                    </div>
+                  ) : isCod ? (
+                    <div className="inline-flex items-center gap-1.5 text-xs text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200 font-medium">
+                      <TbTruckDelivery className="w-4 h-4 text-indigo-600" />
+                      <span>Pay Rs. {displayTotal} in Cash upon Doorstep Delivery</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => handleSwitchToCod(ord.orderId)}
+                        disabled={payingOrderId === ord.orderId}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                      >
+                        <TbCash className="w-4 h-4 text-slate-600" />
+                        <span>Pay with Cash on Delivery</span>
+                      </button>
+
+                      <button
+                        onClick={() => handlePayOnline(ord.orderId)}
+                        disabled={payingOrderId === ord.orderId}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+                      >
+                        <TbCreditCard className="w-4 h-4" />
+                        <span>{payingOrderId === ord.orderId ? "Connecting..." : "Pay with Khalti"}</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

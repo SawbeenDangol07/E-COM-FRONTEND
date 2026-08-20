@@ -5,7 +5,7 @@ import { fetchProducts } from "../../reducer/ProductReducer";
 import orderService from "../../services/order.service";
 import chatService from "../../services/chat.service";
 import {
-  TbCurrencyDollar,
+  TbCash,
   TbDeviceMobile,
   TbUsers,
   TbShieldCheck,
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
             <span>Platform Inventory GMV</span>
-            <TbCurrencyDollar className="w-4 h-4 text-emerald-600" />
+            <TbCash className="w-4 h-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-bold text-slate-900">Rs. {Math.round(totalGMV).toLocaleString()}</p>
           <span className="text-[11px] text-emerald-600 font-semibold">Active Inventory Value</span>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                       <td className="py-3.5 font-semibold text-slate-900 truncate max-w-xs">
                         {firstItem}
                       </td>
-                      <td className="py-3.5 font-bold text-slate-900">${displayTotal}</td>
+                      <td className="py-3.5 font-bold text-slate-900">Rs. {displayTotal}</td>
                       <td className="py-3.5">
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${

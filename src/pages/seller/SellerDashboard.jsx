@@ -11,7 +11,7 @@ import {
   TbPlus,
   TbTrash,
   TbEye,
-  TbCurrencyDollar,
+  TbCash,
   TbDeviceMobile,
   TbStarFilled,
   TbMessageDots,
@@ -100,7 +100,7 @@ export default function SellerDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
             <span>Inventory Value</span>
-            <TbCurrencyDollar className="w-4 h-4 text-emerald-600" />
+            <TbCash className="w-4 h-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-bold text-slate-900">Rs. {Math.round(totalValue).toLocaleString()}</p>
           <span className="text-[11px] text-slate-400 font-light">Escrow Protected</span>

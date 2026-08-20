@@ -8,7 +8,6 @@ import {
   TbMinus,
   TbShoppingBag,
   TbArrowRight,
-  TbShieldCheck,
 } from "react-icons/tb";
 
 export default function CartDrawer() {
@@ -161,22 +160,13 @@ export default function CartDrawer() {
                   <span className="font-semibold text-slate-900">Rs. {cartTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Escrow Protection Fee</span>
-                  <span className="text-emerald-600 font-medium">FREE</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Insured Shipping</span>
-                  <span className="text-emerald-600 font-medium">FREE</span>
+                  <span>Shipping</span>
+                  <span className="text-emerald-600 font-medium">Free</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-slate-200 text-sm font-bold text-slate-900">
                   <span>Total</span>
                   <span className="text-indigo-600 font-black">Rs. {cartTotal.toLocaleString()}</span>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs">
-                <TbShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Buyer Escrow: Payment is held safe until you inspect the device.</span>
               </div>
 
               <button

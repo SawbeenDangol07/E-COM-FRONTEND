@@ -8,7 +8,7 @@ export const ProductDTO = z.object({
     .nonempty("Product name is required"),
   price: z.coerce
     .number({ invalid_type_error: "Price must be a valid number" })
-    .min(1, "Price must be at least $1"),
+    .min(1, "Price must be at least Rs. 1"),
   discount: z.coerce
     .number({ invalid_type_error: "Discount must be a number" })
     .min(0, "Discount cannot be negative")
@@ -46,7 +46,7 @@ export const ProductEditDTO = z.object({
     .nonempty("Product name is required"),
   price: z.coerce
     .number({ invalid_type_error: "Price must be a valid number" })
-    .min(1, "Price must be at least $1"),
+    .min(1, "Price must be at least Rs. 1"),
   discount: z.coerce
     .number({ invalid_type_error: "Discount must be a number" })
     .min(0, "Discount cannot be negative")

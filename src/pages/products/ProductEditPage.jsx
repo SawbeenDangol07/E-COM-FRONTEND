@@ -13,7 +13,7 @@ import productService from "../../services/product.service";
 import brandService from "../../services/brand.service";
 import categoryService from "../../services/category.service";
 import { toast } from "sonner";
-import { TbDeviceMobile, TbCurrencyDollar, TbTag, TbCheck, TbLoader2 } from "react-icons/tb";
+import { TbDeviceMobile, TbCash, TbTag, TbCheck, TbLoader2 } from "react-icons/tb";
 
 export default function ProductEditPage() {
   const { loggedInUser } = useAuth();
@@ -240,7 +240,7 @@ export default function ProductEditPage() {
           {/* Section 2: Pricing & Inventory */}
           <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 space-y-5 shadow-xs">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <TbCurrencyDollar className="w-5 h-5 text-indigo-600" />
+              <TbCash className="w-5 h-5 text-indigo-600" />
               <span>2. Pricing & Stock Inventory</span>
             </h3>
 

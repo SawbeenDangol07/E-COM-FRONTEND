@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import brandService from "../../services/brand.service";
+import productService from "../../services/product.service";
 import ProductCard from "../../components/product/ProductCard";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
 import { TbArrowLeft, TbDeviceMobileX, TbLoader2, TbPhoto, TbTag } from "react-icons/tb";
@@ -18,11 +19,24 @@ export default function BrandDetailPage() {
       try {
         const response = await brandService.getBySlug(slug);
         if (response.data) {
-          setBrandData(response.data.brand || response.data.category || { name: slug });
-          setProducts(response.data.products || []);
+          const brandObj = response.data.brand || response.data.category || { name: slug };
+          setBrandData(brandObj);
+          let prods = response.data.products || [];
+          if (prods.length === 0) {
+            try {
+              const prodRes = await productService.listPublic({ brand: brandObj._id || slug });
+              prods = prodRes.data || [];
+            } catch {}
+          }
+          setProducts(prods);
         }
       } catch (err) {
         console.warn("Brand slug fetch error:", err.message);
+        try {
+          const prodRes = await productService.listPublic({ brand: slug });
+          setBrandData({ name: slug });
+          setProducts(prodRes.data || []);
+        } catch {}
       } finally {
         setLoading(false);
       }

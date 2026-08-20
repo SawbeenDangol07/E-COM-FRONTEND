@@ -87,12 +87,19 @@ class BrandService {
     }
   }
 
-  async getBySlug(slug, { page = 1, limit = 20 } = {}) {
+  async getBySlug(slug, { page = 1, limit = 50 } = {}) {
     try {
-      const response = await axiosInstance.get(`/brand/slug/${slug}`, {
-        params: { page, limit },
-      });
-      return response.data;
+      try {
+        const response = await axiosInstance.get(`/brand/slug/${slug}`, {
+          params: { page, limit },
+        });
+        return response.data;
+      } catch (firstErr) {
+        const fallback = await axiosInstance.get(`/brand/${slug}/detail`, {
+          params: { page, limit },
+        });
+        return fallback.data;
+      }
     } catch (error) {
       throw error;
     }

@@ -11,7 +11,16 @@ import {
 import ProductCard from "../../components/product/ProductCard";
 import ProductFilter from "../../components/product/ProductFilter";
 import { PageHeadingWithSubtitle } from "../../components/page-heading/PageHeading";
-import { TbFilter, TbDeviceMobileX } from "react-icons/tb";
+import {
+  TbFilter,
+  TbDeviceMobileX,
+  TbChevronLeft,
+  TbChevronRight,
+  TbChevronsLeft,
+  TbChevronsRight,
+} from "react-icons/tb";
+
+const ITEMS_PER_PAGE = 9;
 
 export default function ProductListPage() {
   const dispatch = useDispatch();
@@ -20,6 +29,7 @@ export default function ProductListPage() {
     (state) => state.products
   );
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Load Categories & Brands on mount if empty
   useEffect(() => {
@@ -59,89 +69,187 @@ export default function ProductListPage() {
     dispatch(fetchProducts(filters));
   }, [filters, dispatch]);
 
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Lookup maps for resolving IDs <-> slugs <-> names
+  const brandLookup = useMemo(() => {
+    const map = new Map();
+    if (Array.isArray(brands)) {
+      brands.forEach((b) => {
+        if (b._id) map.set(String(b._id), b);
+        if (b.id) map.set(String(b.id), b);
+        if (b.slug) map.set(b.slug.toLowerCase(), b);
+        if (b.name) map.set(b.name.toLowerCase(), b);
+      });
+    }
+    return map;
+  }, [brands]);
+
+  const categoryLookup = useMemo(() => {
+    const map = new Map();
+    if (Array.isArray(categories)) {
+      categories.forEach((c) => {
+        if (c._id) map.set(String(c._id), c);
+        if (c.id) map.set(String(c.id), c);
+        if (c.slug) map.set(c.slug.toLowerCase(), c);
+        if (c.name) map.set(c.name.toLowerCase(), c);
+      });
+    }
+    return map;
+  }, [categories]);
+
   // Client-side instant filter & sort guarantees 100% responsiveness
   const filteredProducts = useMemo(() => {
-    return products.filter((item) => {
-      // 1. Search query filter
-      if (filters.search && filters.search.trim()) {
-        const query = filters.search.toLowerCase().trim();
-        const nameMatch = item.name?.toLowerCase().includes(query);
-        const descMatch = item.description?.toLowerCase().includes(query);
-        const brandMatch =
-          typeof item.brand === "object"
-            ? item.brand?.name?.toLowerCase().includes(query)
-            : String(item.brand || "").toLowerCase().includes(query);
-        if (!nameMatch && !descMatch && !brandMatch) return false;
-      }
+    const targetBrand = filters.brand && filters.brand !== "all" ? filters.brand.toLowerCase() : null;
+    const targetCat = filters.category && filters.category !== "all" ? filters.category.toLowerCase() : null;
 
-      // 2. Brand filter
-      if (filters.brand && filters.brand !== "all") {
-        const targetBrand = filters.brand.toLowerCase();
-        let match = false;
-        if (Array.isArray(item.brand)) {
-          match = item.brand.some(
-            (b) =>
-              b._id === filters.brand ||
-              b.slug?.toLowerCase() === targetBrand ||
-              b.name?.toLowerCase() === targetBrand
-          );
-        } else if (item.brand && typeof item.brand === "object") {
-          match =
-            item.brand._id === filters.brand ||
-            item.brand.slug?.toLowerCase() === targetBrand ||
-            item.brand.name?.toLowerCase() === targetBrand;
-        } else if (typeof item.brand === "string") {
-          match =
-            item.brand === filters.brand ||
-            item.brand.toLowerCase() === targetBrand;
+    return products
+      .filter((item) => {
+        // 1. Search query filter
+        if (filters.search && filters.search.trim()) {
+          const query = filters.search.toLowerCase().trim();
+          const nameMatch = item.name?.toLowerCase().includes(query);
+          const descMatch = item.description?.toLowerCase().includes(query);
+          const brandMatch =
+            typeof item.brand === "object"
+              ? item.brand?.name?.toLowerCase().includes(query)
+              : String(item.brand || "").toLowerCase().includes(query);
+          if (!nameMatch && !descMatch && !brandMatch) return false;
         }
-        if (!match) return false;
-      }
 
-      // 3. Category filter
-      if (filters.category && filters.category !== "all") {
-        const targetCat = filters.category.toLowerCase();
-        let match = false;
-        if (Array.isArray(item.category)) {
-          match = item.category.some(
-            (c) =>
-              c._id === filters.category ||
-              c.slug?.toLowerCase() === targetCat ||
-              c.name?.toLowerCase() === targetCat
-          );
-        } else if (item.category && typeof item.category === "object") {
-          match =
-            item.category._id === filters.category ||
-            item.category.slug?.toLowerCase() === targetCat ||
-            item.category.name?.toLowerCase() === targetCat;
-        } else if (typeof item.category === "string") {
-          match =
-            item.category === filters.category ||
-            item.category.toLowerCase() === targetCat;
+        // 2. Brand filter
+        if (targetBrand) {
+          const itemBrands = Array.isArray(item.brand)
+            ? item.brand
+            : item.brand
+            ? [item.brand]
+            : [];
+
+          const match = itemBrands.some((b) => {
+            if (!b) return false;
+            if (typeof b === "object") {
+              const bId = String(b._id || b.id || "");
+              const bSlug = (b.slug || "").toLowerCase();
+              const bName = (b.name || "").toLowerCase();
+              return (
+                bId === filters.brand ||
+                bSlug === targetBrand ||
+                bName === targetBrand
+              );
+            } else {
+              const rawStr = String(b).toLowerCase();
+              if (rawStr === targetBrand || String(b) === filters.brand) return true;
+              const resolved = brandLookup.get(String(b)) || brandLookup.get(rawStr);
+              if (resolved) {
+                return (
+                  String(resolved._id) === filters.brand ||
+                  resolved.slug?.toLowerCase() === targetBrand ||
+                  resolved.name?.toLowerCase() === targetBrand
+                );
+              }
+              return false;
+            }
+          });
+
+          if (!match) return false;
         }
-        if (!match) return false;
-      }
 
-      // 4. Price range filter
-      const effectivePrice = item.afterDiscount ? item.afterDiscount / 100 : (item.price || 0) / 100;
-      if (filters.minPrice && !isNaN(+filters.minPrice) && effectivePrice < +filters.minPrice) {
-        return false;
-      }
-      if (filters.maxPrice && !isNaN(+filters.maxPrice) && effectivePrice > +filters.maxPrice) {
-        return false;
-      }
+        // 3. Category filter
+        if (targetCat) {
+          const itemCats = Array.isArray(item.category)
+            ? item.category
+            : item.category
+            ? [item.category]
+            : [];
 
-      return true;
-    }).sort((a, b) => {
-      const priceA = a.afterDiscount ? a.afterDiscount / 100 : (a.price || 0) / 100;
-      const priceB = b.afterDiscount ? b.afterDiscount / 100 : (b.price || 0) / 100;
+          const match = itemCats.some((c) => {
+            if (!c) return false;
+            if (typeof c === "object") {
+              const cId = String(c._id || c.id || "");
+              const cSlug = (c.slug || "").toLowerCase();
+              const cName = (c.name || "").toLowerCase();
+              return (
+                cId === filters.category ||
+                cSlug === targetCat ||
+                cName === targetCat
+              );
+            } else {
+              const rawStr = String(c).toLowerCase();
+              if (rawStr === targetCat || String(c) === filters.category) return true;
+              const resolved = categoryLookup.get(String(c)) || categoryLookup.get(rawStr);
+              if (resolved) {
+                return (
+                  String(resolved._id) === filters.category ||
+                  resolved.slug?.toLowerCase() === targetCat ||
+                  resolved.name?.toLowerCase() === targetCat
+                );
+              }
+              return false;
+            }
+          });
 
-      if (filters.sortBy === "price-asc") return priceA - priceB;
-      if (filters.sortBy === "price-desc") return priceB - priceA;
-      if (filters.sortBy === "discount") return (b.discount || 0) - (a.discount || 0);
-      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-    });
+          if (!match) return false;
+        }
+
+        // 4. Price range filter
+        const effectivePrice = item.afterDiscount ? item.afterDiscount / 100 : (item.price || 0) / 100;
+        if (filters.minPrice && !isNaN(+filters.minPrice) && effectivePrice < +filters.minPrice) {
+          return false;
+        }
+        if (filters.maxPrice && !isNaN(+filters.maxPrice) && effectivePrice > +filters.maxPrice) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        const priceA = a.afterDiscount ? a.afterDiscount / 100 : (a.price || 0) / 100;
+        const priceB = b.afterDiscount ? b.afterDiscount / 100 : (b.price || 0) / 100;
+
+        if (filters.sortBy === "price-asc") return priceA - priceB;
+        if (filters.sortBy === "price-desc") return priceB - priceA;
+        if (filters.sortBy === "discount") return (b.discount || 0) - (a.discount || 0);
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
   }, [products, filters]);
+
+  // Total pages and pagination slice
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE) || 1;
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProducts = useMemo(() => {
+    return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredProducts, startIndex]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const getPageNumbers = () => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages = [];
+    if (currentPage <= 3) {
+      pages.push(1, 2, 3, 4, "...", totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+    }
+    return pages;
+  };
 
   const activeFiltersCount = [
     filters.brand !== "all" && filters.brand,
@@ -244,11 +352,93 @@ export default function ProductListPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product._id || product.id} product={product} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product._id || product.id} product={product} />
+                ))}
+              </div>
+
+              {/* Storefront Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+                  <div className="text-xs text-slate-500 font-medium">
+                    Showing{" "}
+                    <span className="font-bold text-slate-900">
+                      {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filteredProducts.length)}
+                    </span>{" "}
+                    of <span className="font-bold text-slate-900">{filteredProducts.length}</span> devices
+                  </div>
+
+                  <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    {/* First Page */}
+                    <button
+                      disabled={currentPage <= 1}
+                      onClick={() => handlePageChange(1)}
+                      className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 transition shadow-2xs cursor-pointer"
+                      title="First Page"
+                    >
+                      <TbChevronsLeft className="w-4 h-4" />
+                    </button>
+
+                    {/* Previous Button */}
+                    <button
+                      disabled={currentPage <= 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 transition shadow-2xs cursor-pointer"
+                      title="Previous Page"
+                    >
+                      <TbChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {/* Page Numbers */}
+                    {getPageNumbers().map((pageNum, ind) => {
+                      if (pageNum === "...") {
+                        return (
+                          <span key={`dots-${ind}`} className="px-2 text-slate-400 font-bold">
+                            ...
+                          </span>
+                        );
+                      }
+                      const isActive = currentPage === pageNum;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`w-9 h-9 rounded-xl text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
+                            isActive
+                              ? "bg-indigo-600 text-white font-bold shadow-xs shadow-indigo-600/20"
+                              : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-2xs"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    {/* Next Button */}
+                    <button
+                      disabled={currentPage >= totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 transition shadow-2xs cursor-pointer"
+                      title="Next Page"
+                    >
+                      <TbChevronRight className="w-4 h-4" />
+                    </button>
+
+                    {/* Last Page */}
+                    <button
+                      disabled={currentPage >= totalPages}
+                      onClick={() => handlePageChange(totalPages)}
+                      className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 transition shadow-2xs cursor-pointer"
+                      title="Last Page"
+                    >
+                      <TbChevronsRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>

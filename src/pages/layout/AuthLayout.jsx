@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router";
-import { TbDeviceMobile, TbShieldCheck, TbArrowLeft, TbLock } from "react-icons/tb";
+import { TbArrowLeft } from "react-icons/tb";
 
 export default function AuthLayout() {
   const location = useLocation();
@@ -68,19 +68,6 @@ export default function AuthLayout() {
               </p>
             </div>
           )}
-        </div>
-
-        {/* Minimalist Trust & Security Footer */}
-        <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-slate-400">
-          <div className="flex items-center gap-1">
-            <TbLock className="w-3.5 h-3.5 text-emerald-600" />
-            <span>256-Bit SSL Encrypted</span>
-          </div>
-          <span>•</span>
-          <div className="flex items-center gap-1">
-            <TbShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Verified Escrow</span>
-          </div>
         </div>
       </div>
     </div>
