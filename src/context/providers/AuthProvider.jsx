@@ -63,10 +63,11 @@ export default function AuthProvider({ children }) {
   // Validate active JWT session on application mount
   useEffect(() => {
     const token = Cookies.get("token") || localStorage.getItem("token");
-    if (token) {
+    if (token && token !== "undefined" && token !== "null") {
       getLoggedInUser().catch((err) => {
         console.warn("Session check notice:", err.message);
-        if (err.status === 401 || err.status === 403) {
+        // Only clear if the server explicitly confirmed the token signature is dead/expired
+        if (err.status === 401 && (err.message?.toLowerCase().includes("expired") || err.message?.toLowerCase().includes("jwt"))) {
           Cookies.remove("token");
           localStorage.removeItem("token");
           localStorage.removeItem("mobimarket_user");

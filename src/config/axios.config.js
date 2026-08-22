@@ -24,13 +24,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // If token is invalid or unauthorized, clean up
+    // Only wipe session if the dedicated profile validation endpoint /auth/me explicitly returns 401
     if (error.response && error.response.status === 401) {
-      const isAuthPath =
-        error.config.url?.includes("/auth/login") ||
-        error.config.url?.includes("/auth/register") ||
-        error.config.url?.includes("/auth/activate");
-      if (!isAuthPath) {
+      if (error.config.url?.includes("/auth/me")) {
         Cookies.remove("token");
         localStorage.removeItem("token");
         localStorage.removeItem("mobimarket_user");
