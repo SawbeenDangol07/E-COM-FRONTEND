@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("token") || localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // If token is invalid or unauthorized, optional cleanup
+    // If token is invalid or unauthorized, clean up
     if (error.response && error.response.status === 401) {
       const isAuthPath =
         error.config.url?.includes("/auth/login") ||
@@ -32,6 +32,7 @@ axiosInstance.interceptors.response.use(
         error.config.url?.includes("/auth/activate");
       if (!isAuthPath) {
         Cookies.remove("token");
+        localStorage.removeItem("token");
         localStorage.removeItem("mobimarket_user");
       }
     }

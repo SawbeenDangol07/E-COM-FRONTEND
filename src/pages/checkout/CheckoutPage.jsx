@@ -72,7 +72,27 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // 1. Sync cart items to Backend Cart
+      // 1. Clean existing backend cart so it matches the current frontend cart exactly
+      const activeCartRes = await orderService.getCart().catch(() => null);
+      const existingCart = activeCartRes?.data?.[0];
+      if (existingCart && Array.isArray(existingCart.detail)) {
+        const currentProductIds = new Set(cart.map((item) => String(item._id || item.id)));
+        for (const item of existingCart.detail) {
+          const itemProdId = String(item.product?._id || item.product);
+          if (!currentProductIds.has(itemProdId)) {
+            try {
+              await orderService.updateCart(existingCart.orderId, {
+                product: itemProdId,
+                quantity: 0,
+              });
+            } catch (err) {
+              console.warn("Clean stale cart item notice:", err.message);
+            }
+          }
+        }
+      }
+
+      // 2. Sync current cart items to Backend Cart
       let lastCartResponse = null;
       for (const item of cart) {
         const prodId = item._id || item.id;
@@ -90,8 +110,8 @@ export default function CheckoutPage() {
 
       let cartId = lastCartResponse?.data?.orderId;
       if (!cartId) {
-        const activeCartRes = await orderService.getCart();
-        cartId = activeCartRes?.data?.[0]?.orderId || activeCartRes?.data?.orderId;
+        const freshCartRes = await orderService.getCart();
+        cartId = freshCartRes?.data?.[0]?.orderId || freshCartRes?.data?.orderId;
       }
 
       if (!cartId) {

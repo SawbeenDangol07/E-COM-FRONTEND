@@ -60,14 +60,15 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // Validate active JWT cookie session on application mount
+  // Validate active JWT session on application mount
   useEffect(() => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("token") || localStorage.getItem("token");
     if (token) {
       getLoggedInUser().catch((err) => {
         console.warn("Session check notice:", err.message);
         if (err.status === 401 || err.status === 403) {
           Cookies.remove("token");
+          localStorage.removeItem("token");
           localStorage.removeItem("mobimarket_user");
           setLoggedInUser(null);
         }
@@ -82,12 +83,13 @@ export default function AuthProvider({ children }) {
       // res.data is JWT token string
       const authToken = res.data;
       
-      // Store auth token in cookies exactly as done in reference
+      // Store auth token in both cookies and localStorage for cross-redirect persistence
       Cookies.set("token", authToken, {
         expires: 1,
         secure: window.location.protocol === "https:",
         sameSite: "lax",
       });
+      localStorage.setItem("token", authToken);
 
       // Fetch user profile
       const user = await getLoggedInUser();
@@ -135,6 +137,7 @@ export default function AuthProvider({ children }) {
 
   const logout = () => {
     Cookies.remove("token");
+    localStorage.removeItem("token");
     localStorage.removeItem("mobimarket_user");
     setLoggedInUser(null);
     toast.success("Logged out successfully");
